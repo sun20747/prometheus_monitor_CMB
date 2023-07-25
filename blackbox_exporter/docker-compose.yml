@@ -1,0 +1,18 @@
+version: "3"
+
+networks:
+  monitor-net:
+    external:
+      name: monitor-net
+
+services:
+  blackbox_exporter:
+    image: prom/blackbox-exporter
+    container_name: blackbox_exporter
+    restart: unless-stopped
+    ports: [9115:9115]
+    networks: [monitor-net]
+    command:
+      - "--config.file=/etc/blackbox/blackbox.yml"
+    volumes:
+      - ./blackbox.yml:/etc/blackbox/blackbox.yml

@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   prometheus:
     image: prom/prometheus:latest
@@ -10,6 +10,7 @@ services:
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.retention=${PROMETHEUS_RETENTION:-24h}
     restart: always
+    ports: [9090:9090]
     networks:
       - monitor-net
   node-exporter:
@@ -27,6 +28,16 @@ services:
     networks:
       - monitor-net
 
+  blackbox_exporter:
+    image: prom/blackbox-exporter
+    container_name: blackbox_exporter
+    restart: unless-stopped
+    ports: [9115:9115]
+    networks: [monitor-net]
+    command:
+      - "--config.file=/etc/blackbox/blackbox.yml"
+    volumes:
+      - ./blackbox_exporter/blackbox.yml:/etc/blackbox/blackbox.yml
 
 networks:
   monitor-net:
